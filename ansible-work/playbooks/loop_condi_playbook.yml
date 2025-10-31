@@ -1,0 +1,24 @@
+---
+
+- name: Install required software
+  hosts: dbserver,webserver
+  become: true
+
+  vars:
+    mariadb_packages:
+      - mariadb-server
+      - python3-PyMySQL
+
+  tasks:
+    - name: Install mariadb packages
+      ansible.builtin.dnf:
+        name: "{{ mariadb_packages }}"
+        state: present
+      when: ansible_facts.distribution == "RedHat"
+
+    - name: Ensure services started
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
+

@@ -1,0 +1,18 @@
+---
+packages:
+  - nginx
+  - php-fpm
+  - firewalld
+
+web_services:
+  -  nginx
+  -  php-fpm
+  -  firewalld
+
+firewall_service_rules:
+  - http
+
+web_config_src: files/nginx.conf.standard
+web_config_dst: /etc/nginx/nginx.conf
+app_config_src: files/php-fpm.conf.standard
+app_config_dst: /etc/php-fpm.conf

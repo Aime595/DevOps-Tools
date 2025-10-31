@@ -1,0 +1,22 @@
+---
+
+- name: Install and start Apache from a fact file
+  hosts: webserver
+  become: true
+
+  tasks:
+    - name: create a custom variable from a fact file
+      ansible.builtin.set_fact:
+        custom: "{{ ansible_facts.ansible_local.custom.general }}"
+
+    - name: Install httpd using custom fact file
+      ansible.builtin.dnf:
+        name: "{{ custom.package }}"
+        state: latest
+
+    - name: Start httpd using custom fact file
+      ansible.builtin.service:
+        name: "{{ custom.service }}"
+        state: "{{ custom.state }}"
+        enabled: "{{ custom.enabled }}"
+

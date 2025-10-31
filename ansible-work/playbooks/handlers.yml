@@ -1,0 +1,61 @@
+---
+
+- name: Web application server deployment
+  hosts: webserver,dbserver
+  become: true
+
+  vars_files:
+    - handlers-vars.yml
+
+  tasks:
+    - name: Installed packages
+      ansible.builtin.dnf:
+        name: "{{ packages }}"
+        state: present
+
+    - name: Ensure services are started
+      loop: "{{ web_services }}"
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+
+    - name: Ensure services are allowed through the firewall
+      loop: "{{ firewall_service_rules }}"
+      ansible.posix.firewalld:
+        service: "{{ item }}"
+        state: enabled
+        immediate: true
+        permanent: true
+
+    - name: Copy web config to desired location
+      notify:
+        - restart web service
+      ansible.builtin.copy:
+        src: "{{ web_config_src }}"
+        dest: "{{ web_config_dst }}"
+        mode: "0644"
+
+    - name: Copy app config to desired location
+      notify:
+        - restart app service
+      ansible.builtin.copy:
+        src: "{{ app_config_src }}"
+        dest: "{{ app_config_dst }}"
+        mode: "0644"
+
+  handlers:
+    - name: restart web service
+      ansible.builtin.service:
+        name: "{{ web_services[0] }}"
+        state: restarted
+
+    - name: restart app service
+      ansible.builtin.service:
+        name: "{{ web_services[1] }}"
+        state: restarted
+        
+      
+      
+      
+
