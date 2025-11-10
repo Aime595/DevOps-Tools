@@ -1,0 +1,30 @@
+---
+
+- name: Handle failures
+  hosts: webserver,dbserver
+  become: true
+
+  vars:
+    web_package: http
+    db_package: mariadb-server
+    db_service: mariadb
+
+  tasks:
+    - name: Ensure required packages are installed
+      ignore_errors: true
+      ansible.builtin.dnf:
+        name:
+          - http
+          - mariadb-server
+          - mariadb
+        state: latest
+
+    - name: Ensure services are started
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - "{{ web_package }}"
+        - "{{ db_package }}"
+        - "{{ db_service }}"
