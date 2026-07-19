@@ -1,0 +1,5 @@
+git@gitlab.com:rgdacosta/ansible
+git@github.com:RedHatTraining/AD141-apps
+https://github.com/ned1313/Getting-Started-Terraform
+git@github.com:ned1313/Terraform-Providers.git
+https://github.com/ned1313/Terraform-State-Fundamentals
