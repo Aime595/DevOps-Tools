@@ -1,0 +1,43 @@
+---
+
+- name: Ensure Apache HTTPD and firewalld are installed and started
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Ensure HTTPD is installed
+      ansible.builtin.dnf:
+        name: httpd
+        state: present
+
+    - name: Ensure the correct index.html is present
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+        mode: '0644'
+
+    - name: Ensure firewalld is installed
+      ansible.builtin.dnf:
+        name: firewalld
+        state: present
+
+    - name: Ensure firewalld is running
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Ensure httpd is running 
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Ensure firewall allow access to httpd ansible.builtin.service
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+
+...
